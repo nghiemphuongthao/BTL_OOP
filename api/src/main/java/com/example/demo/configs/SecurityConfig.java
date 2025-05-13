@@ -42,27 +42,33 @@ public class SecurityConfig {
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
                 throws ServletException, IOException {
 
-            final String authorizationHeader = request.getHeader("Authorization");
+            String path = request.getServletPath();
+            if (path.equals("/api/login")) {
+                chain.doFilter(request, response);
+            } else {
+                final String authorizationHeader = request.getHeader("Authorization");
 
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                String token = authorizationHeader.substring(7);
+                if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                    String token = authorizationHeader.substring(7);
 
-                if (jwtTokenUtil.validateToken(token)) {
-                    JWTTokenPayload payload = jwtTokenUtil.getPayloadFromToken(token);
-                    if (payload != null) {
-                        List<SimpleGrantedAuthority> authorities = payload.getRoleIds().stream()
-                                .map(roleId -> new SimpleGrantedAuthority("ROLE_" + roleId))
-                                .collect(Collectors.toList());
+                    if (jwtTokenUtil.validateToken(token)) {
+                        JWTTokenPayload payload = jwtTokenUtil.getPayloadFromToken(token);
+                        if (payload != null) {
+                            List<SimpleGrantedAuthority> authorities = payload.getRoleIds().stream()
+                                    .map(roleId -> new SimpleGrantedAuthority("ROLE_" + roleId))
+                                    .collect(Collectors.toList());
 
-                        UsernamePasswordAuthenticationToken authenticationToken =
-                                new UsernamePasswordAuthenticationToken(payload, null, authorities);
+                            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                                    payload, null, authorities);
 
-                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                        }
                     }
                 }
+
+                chain.doFilter(request, response);
             }
 
-            chain.doFilter(request, response);
         }
     }
 
@@ -74,22 +80,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors
-                .configurationSource(request -> {
-                    var config = new org.springframework.web.cors.CorsConfiguration();
-                    config.setAllowCredentials(true);
-                    config.addAllowedOrigin("http://localhost:5173");
-                    config.addAllowedMethod("*");
-                    config.addAllowedHeader("*");
-                    return config;
-                })
-            )
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors
+                        .configurationSource(request -> {
+                            var config = new org.springframework.web.cors.CorsConfiguration();
+                           config.setAllowCredentials(true); // Allow credentials (cookies, etc.)
+                            config.addAllowedOrigin("http://localhost:5173"); // Ensure this is the correct URL
+                            config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                            config.setAllowedHeaders(List.of("*"));
+                            return config;
+                        }))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // This allows OPTIONS requests
+                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
+                        .anyRequest().authenticated()
+                    )
+                .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
