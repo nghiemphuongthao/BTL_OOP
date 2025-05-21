@@ -24,7 +24,7 @@ public class LicensePackage {
     @Column(name = "code", nullable = false, length = 100)
     private String code;
 
-    @Column(name = "nane", nullable = false, length = 100) // Column name is "nane" in SQL
+    @Column(name = "name", nullable = false, length = 100) // Column name is "nane" in SQL
     private String name; // Java field name "name"
 
     @Column(name = "exp_months", nullable = false)

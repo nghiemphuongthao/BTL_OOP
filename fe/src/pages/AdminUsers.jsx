@@ -20,9 +20,9 @@ export default function AdminPermissionsForm({ form, setIsFormOpen, editAdmin })
       <Dialog open={true} onOpenChange={setIsFormOpen}>
         <DialogContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit()}>
+            <form onSubmit={form?.handleSubmit()}>
               <FormField
-                control={form.control}
+                control={form?.control}
                 name="isActive"
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-2">

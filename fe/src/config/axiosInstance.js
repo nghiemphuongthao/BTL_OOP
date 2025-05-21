@@ -19,6 +19,7 @@ axiosInstance.interceptors.request.use(
     if (token) {
       // If token exists, add it to the Authorization header
       config.headers['Authorization'] = `Bearer ${token}`;
+      console.log('Token added to request:', token);
     }
 
     return config;

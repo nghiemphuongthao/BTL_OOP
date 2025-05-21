@@ -3,8 +3,9 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "./use-toast";
 import { apiRequest, queryClient } from "../lib/queryClient";
 import { login } from "../services/auth";
-import { setItem } from "../config/storage";
+import { setItem, getItem } from "../config/storage";
 import axiosInstance from "../config/axiosInstance";
+import { tr } from "date-fns/locale/tr";
 
 // Create the context
 const AuthContext = createContext(null);
@@ -19,11 +20,15 @@ export function AuthProvider({ children }) {
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["/api/user"],
+    queryKey: ["/api/"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/api/user");
-      return response.data;
+      const response = await axiosInstance.get("/api/admin/profile");
+      return response.data
     },
+    onSuccess: (data) => {
+      console.log("Admin data fetched successfully:", data);
+      setItem("adminId", data);
+    }
   });
 
   const loginMutation = useMutation(

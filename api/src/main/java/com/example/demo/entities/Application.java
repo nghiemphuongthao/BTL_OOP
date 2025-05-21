@@ -3,6 +3,10 @@ package com.example.demo.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +30,7 @@ public class Application {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", foreignKey = @ForeignKey(name = "applications_admins_FK"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "adminRoles", "createdApplications", "createdCustomers", "createdInvoices", "createdLicenses", "createdLicensePackages",})
     private Admin createdByAdmin;
 
     @CreationTimestamp
@@ -35,6 +40,8 @@ public class Application {
     // --- Relationships ---
 
     @OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @ToString.Exclude
     private Set<LicensePackage> licensePackages = new HashSet<>();
 
     // No explicit constructors, getters, setters needed

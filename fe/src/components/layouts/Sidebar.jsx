@@ -1,16 +1,11 @@
 import React from "react";
-import { Link, useLocation } from "wouter";
+import { NavLink } from "react-router-dom";
 import { AdminUserInfo } from "../auth/AdminUserInfo";
 import { LogoutButton } from "../auth/LogoutButton";
 import { useAuth } from "../../hooks/use-auth";
 
 export default function Sidebar({ open, toggleSidebar }) {
-  const [location] = useLocation();
-   const { admin, isLoading } = useAuth();
-
-  const isActive = (path) => {
-    return location === path;
-  };
+  const { admin, isLoading } = useAuth();
 
   const menuItems = [
     { path: "/", label: "Dashboard", icon: "dashboard" },
@@ -22,8 +17,9 @@ export default function Sidebar({ open, toggleSidebar }) {
     { path: "/admins", label: "Admin Users", icon: "admin_panel_settings" },
     { path: "/settings", label: "Settings", icon: "settings" },
   ];
-  if(!admin){
-    return <></>
+
+  if (!admin) {
+    return null;
   }
 
   return (
@@ -42,27 +38,39 @@ export default function Sidebar({ open, toggleSidebar }) {
         <p className="text-xs uppercase text-[#D2B48C] mt-4 mb-2 px-4">Main</p>
 
         {menuItems.slice(0, 6).map((item) => (
-          <Link key={item.path} href={item.path} className={`flex items-center p-3 mb-1 rounded text-white ${isActive(item.path)
-              ? "bg-[#704923]"
-              : "hover:bg-[#A67C52] transition-colors duration-200"
-            }`}>
+          <NavLink
+            key={item.path}
+            to={item.path}  // <-- here!
+            className={({ isActive }) =>
+              `flex items-center p-3 mb-1 rounded text-white ${
+                isActive
+                  ? "bg-[#704923]"
+                  : "hover:bg-[#A67C52] transition-colors duration-200"
+              }`
+            }
+          >
             <span className="material-icons mr-3 text-sm">{item.icon}</span>
             <span>{item.label}</span>
-          </Link>
+          </NavLink>
         ))}
 
         <p className="text-xs uppercase text-[#D2B48C] mt-6 mb-2 px-4">Administration</p>
 
         {menuItems.slice(6).map((item) => (
-          <Link key={item.path} href={item.path}
-              className={`flex items-center p-3 mb-1 rounded text-white ${isActive(item.path)
+          <NavLink
+            key={item.path}
+            to={item.path}  // <-- here too!
+            className={({ isActive }) =>
+              `flex items-center p-3 mb-1 rounded text-white ${
+                isActive
                   ? "bg-[#704923]"
                   : "hover:bg-[#A67C52] transition-colors duration-200"
-                }`}
-            >
-              <span className="material-icons mr-3 text-sm">{item.icon}</span>
-              <span>{item.label}</span>
-          </Link>
+              }`
+            }
+          >
+            <span className="material-icons mr-3 text-sm">{item.icon}</span>
+            <span>{item.label}</span>
+          </NavLink>
         ))}
       </nav>
 

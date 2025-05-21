@@ -5,33 +5,44 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import axiosInstance from "../config/axiosInstance";
 
 export default function Dashboard() {
-  const { data: applications, isLoading: loadingApps } = useQuery({
-    queryKey: ["/api/applications"],
+  const {
+    data: applications,
+    isLoading: loadingApps,
+    error,
+  } = useQuery({
+    queryKey: ["application"],
     queryFn: async () => {
-      const response = await axiosInstance.get("/api/applications");
+      console.log("Fetching applications...");
+      const response = await axiosInstance.get("/api/application");
       return response.data;
     },
   });
 
-  // const { data: licenses, isLoading: loadingLicenses } = useQuery({
-  //   queryKey: ["/api/licenses", { status: "active" }],
-  // });
+  const {
+    data: customers,
+    isLoading: loadingCustomers,
+    error: customersError,
+  } = useQuery({
+    queryKey: ["customers"],
+    queryFn: async () => {
+      console.log("Fetching customers...");
+      const response = await axiosInstance.get("/api/customers");
+      return response.data;
+    },
+  });
 
-  // const { data: customers, isLoading: loadingCustomers } = useQuery({
-  //   queryKey: ["/api/customers"],
-  // });
+   useEffect(() => {
+    if (error) console.error("React Query Error:", error);
+  }, [error]);
 
-  // const { data: invoices, isLoading: loadingInvoices } = useQuery({
-  //   queryKey: ["/api/invoices"],
-  // });
 
-  const isLoading = loadingApps ;
+
+  const isLoading = loadingApps;
 
 
   useEffect(() => {
-    console.log('Applications:', applications);
-    
-  }, [])
+    console.log('Applications:');
+  },)
 
   if (loadingApps) {
     return <div>Loading applications...</div>;
@@ -43,7 +54,7 @@ export default function Dashboard() {
 
       {/* Overview Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <Card className="bg-[#F5EAD8]">
+        {/* <Card className="bg-[#F5EAD8]">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-[#704923]">
               Total Licenses
@@ -59,7 +70,7 @@ export default function Dashboard() {
             </div>
             <p className="text-xs text-[#8B5A2B] mt-1">Active licenses in the system</p>
           </CardContent>
-        </Card>
+        </Card> */}
 
         <Card className="bg-[#F5EAD8]">
           <CardHeader className="pb-2">
@@ -79,7 +90,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#F5EAD8]">
+         <Card className="bg-[#F5EAD8]">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-[#704923]">
               Customers
@@ -97,7 +108,7 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-[#F5EAD8]">
+        {/* <Card className="bg-[#F5EAD8]">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-[#704923]">
               Invoices
@@ -113,11 +124,11 @@ export default function Dashboard() {
             </div>
             <p className="text-xs text-[#8B5A2B] mt-1">Total invoices created</p>
           </CardContent>
-        </Card>
+        </Card>  */}
       </div>
 
       {/* Recent Licenses */}
-      <Card className="mb-8">
+      {/* <Card className="mb-8">
         <CardHeader>
           <CardTitle>Recent Licenses</CardTitle>
         </CardHeader>
@@ -144,13 +155,12 @@ export default function Dashboard() {
                     <TableCell className="font-medium">{license.licenseCode}</TableCell>
                     <TableCell>
                       <span
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          license.status === "active"
+                        className={`px-2 py-1 rounded-full text-xs ${license.status === "active"
                             ? "bg-green-100 text-green-800"
                             : license.status === "inactive"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
                       >
                         {license.status}
                       </span>
@@ -176,7 +186,7 @@ export default function Dashboard() {
             </Table>
           )}
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Quick Actions */}
       <Card>

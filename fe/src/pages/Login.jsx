@@ -9,6 +9,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Redirect } from "wouter";
 import { useAuth } from "../hooks/use-auth";
 import { Loader2 } from "lucide-react";
+import { login } from "../services/auth";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { setItem } from "../config/storage";
+import { queryClient } from "../lib/queryClient";
+import { toast } from "../hooks/use-toast";
+import axios from "axios";
+import axiosInstance from "../config/axiosInstance";
 
 // Define the login validation schema using Zod
 const loginSchema = z.object({
@@ -18,8 +26,8 @@ const loginSchema = z.object({
 
 
 export default function Login() {
-  const { admin, loginMutation } = useAuth();
-  
+  const { admin } = useAuth();
+
   // Initialize the form with react-hook-form and zod
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -29,10 +37,37 @@ export default function Login() {
     },
   });
 
-  // Function to handle form submission
+  const navigate = useNavigate();
+
+  const loginMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await login(data.username, data.password);
+      return response.data;
+    },
+    onSuccess: async (admin) => {
+      queryClient.setQueryData(["/api/user"], admin);
+      toast({
+        title: "Đăng nhập thành công",
+        description: `Chào mừng trở lại, ${admin?.name || "admin"}`,
+      });
+      setItem("token", admin?.token);
+      const response = await axiosInstance.get("/api/admin/profile");
+      setItem("adminId", response.data);
+      queryClient.setQueryData(["/api/admin/profile"], response.data);
+      navigate("/");
+    },
+    onError: (error) => {
+      // handle error (show message, etc.)
+      console.error(error);
+    }
+  });
+
   const onSubmit = (values) => {
-    loginMutation.mutate(values);
-  };
+    loginMutation.mutate({
+      username: values.username,
+      password: values.password,
+    });
+  }
 
   // Redirect to home if the user is already logged in
   if (admin) {
@@ -55,7 +90,7 @@ export default function Login() {
             </p>
           </div>
         </div>
-        
+
         <Card className="w-full max-w-md mx-auto border-[#8B5A2B]/20">
           <CardHeader>
             <CardTitle className="text-2xl text-[#3D2815]">Đăng nhập</CardTitle>
@@ -73,9 +108,9 @@ export default function Login() {
                     <FormItem>
                       <FormLabel>Tên đăng nhập</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="Nhập tên đăng nhập" 
-                          {...field} 
+                        <Input
+                          placeholder="Nhập tên đăng nhập"
+                          {...field}
                           disabled={loginMutation.isPending}
                         />
                       </FormControl>
@@ -90,10 +125,10 @@ export default function Login() {
                     <FormItem>
                       <FormLabel>Mật khẩu</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="password" 
-                          placeholder="Nhập mật khẩu" 
-                          {...field} 
+                        <Input
+                          type="password"
+                          placeholder="Nhập mật khẩu"
+                          {...field}
                           disabled={loginMutation.isPending}
                         />
                       </FormControl>
@@ -101,8 +136,8 @@ export default function Login() {
                     </FormItem>
                   )}
                 />
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-[#8B5A2B] hover-[#704923]"
                   disabled={loginMutation.isPending}
                 >

@@ -1,9 +1,12 @@
 package com.example.demo.entities;
 
+
 import jakarta.persistence.*;
 import lombok.*; // Lombok imports
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Getter // Lombok annotation
 @Setter // Lombok annotation
@@ -24,6 +27,7 @@ public class Admin {
     @Column(name = "username", nullable = false, length = 100)
     private String username;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false, length = 100)
     private String password; // Remember to handle password hashing securely
 

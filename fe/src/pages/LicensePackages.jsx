@@ -3,10 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
+import axiosInstance from "../config/axiosInstance";
 
 export default function LicensePackages() {
-  const { data, isLoading, error } = useQuery({
+  const { data: packages , isLoading, error } = useQuery({
     queryKey: ["/api/packages"],
+    queryFn: async () => {
+      const response = await axiosInstance.get("/api/license-packages");
+      return response.data;
+    },
   });
 
   if (isLoading) {
@@ -30,6 +35,7 @@ export default function LicensePackages() {
   }
 
   if (error) {
+    console.log("Error fetching license packages:", error);
     return (
       <div className="p-4">
         <div className="flex justify-between items-center mb-6">

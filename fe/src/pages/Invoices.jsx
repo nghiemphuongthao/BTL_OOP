@@ -4,6 +4,8 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import axios from "axios";
+import axiosInstance from "../config/axiosInstance";
 
 export default function Invoices() {
   const [statusFilter, setStatusFilter] = React.useState("");
@@ -12,8 +14,12 @@ export default function Invoices() {
     queryKey: ["/api/invoices", statusFilter],
     // Assuming your API accepts the status filter
     queryFn: async () => {
-      const response = await fetch(`/api/invoices?status=${statusFilter}`);
-      return response.json();
+      const response = await axiosInstance.get(`/api/invoices`, {
+        params: {
+          status: statusFilter,
+        },
+      });
+      return response.data;
     },
   });
 

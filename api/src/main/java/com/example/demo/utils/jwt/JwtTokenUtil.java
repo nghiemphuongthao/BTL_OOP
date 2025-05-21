@@ -21,6 +21,7 @@ public class JwtTokenUtil {
 
     public String generateToken(JWTTokenPayload payload) {
         Algorithm algorithm = Algorithm.HMAC512(secret);
+        System.out.println(new Date(System.currentTimeMillis() + expiration * 1000));
         return JWT.create()
                 .withClaim("adminId", payload.getAdminId())
                 .withClaim("roleIds", payload.getRoleIds())
@@ -43,6 +44,7 @@ public class JwtTokenUtil {
             return false;
         }
     }
+
 
     private DecodedJWT verifyToken(String token) {
         Algorithm algorithm = Algorithm.HMAC512(secret);

@@ -13,6 +13,9 @@ export default function TopNav({ toggleSidebar }) {
       case "/":
         pageTitle = "Dashboard";
         break;
+      case "/applications":
+        pageTitle = "Applications";
+        break;
       case "/licenses":
         pageTitle = "License Management";
         break;
@@ -39,14 +42,14 @@ export default function TopNav({ toggleSidebar }) {
 
   return (
     <div className="bg-white shadow-sm py-2 px-4 flex items-center justify-between">
-      <div className="flex items-center">
+      <div className="flex items-center justify-center">
         <button
           className="md-4"
           onClick={toggleSidebar}
         >
           <span className="material-icons text-[#8B5A2B]">menu</span>
         </button>
-        <h2 className="text-xl font-nunito font-semibold text-[#5A3A1C]">{getPageTitle()}</h2>
+        <h2 className="text-xl ml-2 font-nunito font-semibold text-[#5A3A1C]">{getPageTitle()}</h2>
       </div>
 
       <div className="flex items-center">
