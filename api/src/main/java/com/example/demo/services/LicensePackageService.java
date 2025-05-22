@@ -48,6 +48,16 @@ public class LicensePackageService {
                 .orElseThrow(() -> new RuntimeException("Application not found with id = " + dto.getApplicationId()));
         lp.setApplication(app);
 
+        lp.setExpirationMonths(
+            dto.getExpirationMonths() == null ? 0 : dto.getExpirationMonths()
+        );
+        lp.setCode(
+            dto.getCode() == null ? "" : dto.getCode()
+        );
+        lp.setName(
+            dto.getName() == null ? "" : dto.getName()
+        );
+
         return convertToDTO(licensePackageRepository.save(lp));
     }
 

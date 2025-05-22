@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {
   Form,
   FormField,
@@ -12,17 +13,33 @@ import {
   Dialog,
   DialogContent,
   DialogFooter,
-} from   "../components/ui/dialog";
+} from "../components/ui/dialog";
 
 export default function AdminPermissionsForm({ form, setIsFormOpen, editAdmin }) {
+  const onSubmit = async (values) => {
+    try {
+      if (editAdmin) {
+        // PUT request to update an existing admin
+        await axios.put(`/api/admin/${editAdmin.id}`, values);
+      } else {
+        // POST request to create a new admin
+        await axios.post("/api/admin", values);
+      }
+      setIsFormOpen(false); // Close form on success
+    } catch (error) {
+      console.error("Error saving admin:", error);
+      // Optionally show user feedback here
+    }
+  };
+
   return (
     <div>
       <Dialog open={true} onOpenChange={setIsFormOpen}>
         <DialogContent>
           <Form {...form}>
-            <form onSubmit={form?.handleSubmit()}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
-                control={form?.control}
+                control={form.control}
                 name="isActive"
                 render={({ field }) => (
                   <FormItem className="flex items-center space-x-2">
@@ -99,16 +116,16 @@ export default function AdminPermissionsForm({ form, setIsFormOpen, editAdmin })
               </div>
 
               <DialogFooter className="flex justify-end gap-3 pt-3">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsFormOpen(false)}
                   className="border-[#D2B48C] text-[#704923] hover:bg-[#FAF6F1]"
                 >
                   Cancel
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="bg-[#8B5A2B] hover:bg-[#704923]"
                 >
                   {editAdmin ? "Update Admin" : "Create Admin"}

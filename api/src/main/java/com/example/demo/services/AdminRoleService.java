@@ -1,14 +1,12 @@
 package com.example.demo.services;
 
-// ... các import khác giữ nguyên ...
-import com.example.demo.dtos.AdminRolesUpdateRequest; // Không cần nữa nếu dùng List<Integer>
+// ... các import khác giữ nguyên ... 
 import com.example.demo.entities.Admin;
 import com.example.demo.entities.AdminRole;
 import com.example.demo.entities.Role;
 import com.example.demo.repositories.AdminRepository;
 import com.example.demo.repositories.AdminRoleRepository;
 import com.example.demo.repositories.RoleRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

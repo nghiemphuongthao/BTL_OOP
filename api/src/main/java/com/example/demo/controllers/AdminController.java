@@ -3,7 +3,6 @@ package com.example.demo.controllers;
 import com.example.demo.dtos.AdminCreateRequest;
 import com.example.demo.dtos.AdminPasswordUpdateRequest;
 import com.example.demo.dtos.AdminResponse;
-import com.example.demo.dtos.CustomerDTO;
 import com.example.demo.entities.Admin;
 import com.example.demo.services.AdminServices;
 import com.example.demo.utils.jwt.JWTTokenPayload;
@@ -17,7 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController

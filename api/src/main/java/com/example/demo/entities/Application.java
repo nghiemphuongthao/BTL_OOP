@@ -15,7 +15,6 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false, exclude = {"createdByAdmin", "licensePackages"})
-@ToString(exclude = {"createdByAdmin", "licensePackages"})
 @Entity
 @Table(name = "applications")
 public class Application {

@@ -3,13 +3,8 @@ package com.example.demo.controllers;
 import com.example.demo.dtos.CustomerCreateDTO;
 import com.example.demo.dtos.CustomerDTO;
 import com.example.demo.services.CustomerService;
-import com.example.demo.utils.jwt.JWTTokenPayload;
-import com.example.demo.utils.jwt.JwtTokenUtil;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
