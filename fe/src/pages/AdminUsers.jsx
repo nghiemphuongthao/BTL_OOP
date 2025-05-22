@@ -1,67 +1,67 @@
 import React from "react";
-import axios from "axios";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormControl,
-  FormLabel,
-} from "../components/ui/form";
+import { useForm } from "react-hook-form"; // Khởi tạo useForm từ react-hook-form
+import axios from "axios"; // Sử dụng axios để gửi request
+
 import { Checkbox } from "../components/ui/checkbox";
 import { Button } from "../components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-} from "../components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter } from "../components/ui/dialog"; // Cung cấp các component giao diện
 
-export default function AdminPermissionsForm({ form, setIsFormOpen, editAdmin }) {
+const AdminUsers = () => {
+  const form = useForm(); // Khởi tạo form từ react-hook-form
+
+  const [isFormOpen, setIsFormOpen] = React.useState(false); // State điều khiển hiển thị form
+  const [editAdmin, setEditAdmin] = React.useState(null); // State chứa admin đang được chỉnh sửa (nếu có)
+
+  // Mở form để tạo admin mới hoặc chỉnh sửa
+  const openForm = () => {
+    setEditAdmin(null); // Đặt lại trạng thái editAdmin khi tạo mới
+    setIsFormOpen(true); // Mở form
+  };
+
+  // Hàm xử lý gửi form
   const onSubmit = async (values) => {
     try {
       if (editAdmin) {
-        // PUT request to update an existing admin
-        await axios.put(`/api/admin/${editAdmin.id}`, values);
+        // PUT request để cập nhật admin đã có
+        await axios.put(`/api/admin/${editAdmin.adminId}`, values);
       } else {
-        // POST request to create a new admin
+        // POST request để tạo admin mới
         await axios.post("/api/admin", values);
       }
-      setIsFormOpen(false); // Close form on success
+      setIsFormOpen(false); // Đóng form khi thành công
     } catch (error) {
       console.error("Error saving admin:", error);
-      // Optionally show user feedback here
+      alert(`Đã xảy ra lỗi khi lưu thông tin admin: ${error.message}`);
     }
   };
 
   return (
     <div>
-      <Dialog open={true} onOpenChange={setIsFormOpen}>
-        <DialogContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                  <FormItem className="flex items-center space-x-2">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-[#8B5A2B]"
-                      />
-                    </FormControl>
-                    <div className="space-y-1 leading-none">
-                      <FormLabel className="text-[#704923]">
-                        Active Account
-                      </FormLabel>
-                    </div>
-                  </FormItem>
-                )}
-              />
+      <button onClick={openForm}>Create New Admin</button>
 
-              <div className="space-y-2">
+      {/* Hiển thị form nếu isFormOpen là true */}
+      {isFormOpen && (
+        <Dialog open={true} onOpenChange={setIsFormOpen}>
+          <DialogContent
+            className="bg-white rounded-lg p-8 shadow-xl" // Thêm nền sáng cho DialogContent
+          >
+            {/* Form sử dụng react-hook-form */}
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              {/* Trường Active Account */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  {...form.register("isActive")}
+                  className="data-[state=checked]:bg-[#8B5A2B]"
+                />
+                <div className="space-y-1 leading-none">
+                  <label className="text-[#704923]">Active Account</label>
+                </div>
+              </div>
+
+              {/* Phần Permissions */}
+              <div className="space-y-2 mt-4">
                 <h3 className="text-md font-nunito font-semibold text-[#5A3A1C]">Permissions</h3>
-                <div className="rounded-md border border-[#E6D5B8] p-4 space-y-4">
+                <div className="rounded-md border border-[#E6D5B8] p-4 space-y-4 bg-[#f7f7f7]"> {/* Nền sáng cho khu vực permissions */}
                   <div className="grid grid-cols-3 gap-2 border-b border-[#E6D5B8] pb-2">
                     <div className="font-medium text-[#5A3A1C]">Module</div>
                     <div className="font-medium text-[#5A3A1C]">Read</div>
@@ -71,45 +71,27 @@ export default function AdminPermissionsForm({ form, setIsFormOpen, editAdmin })
                   {["licenses", "enterprises", "services", "packages", "admins"].map((module) => (
                     <div key={module} className="grid grid-cols-3 gap-2 items-center">
                       <div className="text-[#704923]">
-                        {{
-                          licenses: "License Management",
-                          enterprises: "Enterprises",
-                          services: "Services",
-                          packages: "Service Packages",
-                          admins: "Admin Users",
-                        }[module]}
+                        {module === "licenses" ? "License Management" :
+                         module === "enterprises" ? "Enterprises" :
+                         module === "services" ? "Services" :
+                         module === "packages" ? "Service Packages" : "Admin Users"}
                       </div>
 
-                      <FormField
-                        control={form.control}
-                        name={`permissions.${module}.read`}
-                        render={({ field }) => (
-                          <FormItem className="flex items-center space-x-2">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                                className="data-[state=checked]:bg-[#8B5A2B]"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`permissions.${module}.write`}
-                        render={({ field }) => (
-                          <FormItem className="flex items-center space-x-2">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                                className="data-[state=checked]:bg-[#8B5A2B]"
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
+                      {/* Quyền Read */}
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          {...form.register(`permissions.${module}.read`)}
+                          className="data-[state=checked]:bg-[#8B5A2B]"
+                        />
+                      </div>
+
+                      {/* Quyền Write */}
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          {...form.register(`permissions.${module}.write`)}
+                          className="data-[state=checked]:bg-[#8B5A2B]"
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -132,9 +114,11 @@ export default function AdminPermissionsForm({ form, setIsFormOpen, editAdmin })
                 </Button>
               </DialogFooter>
             </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
-}
+};
+
+export default AdminUsers;
